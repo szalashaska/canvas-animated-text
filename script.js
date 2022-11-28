@@ -1,10 +1,17 @@
+// Control variables
+const connectionColorChannel = [255, 255, 255];
+const particleColorChannel = [255, 255, 255];
+const spredOfParticles = 20;
+const thresholdConnectionDistance = 75;
+let adjustX = -40;
+let adjustY = 0;
+const displayedText = "Hello";
+
 const canvas = document.getElementById("canvas1");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let particleArray = [];
-let adjustX = -20;
-let adjustY = 10;
 
 // handle mouse integration
 const mouse = {
@@ -18,16 +25,17 @@ window.addEventListener("mousemove", (e) => {
   mouse.y = e.y;
 });
 
-ctx.font = "30px Verdana";
+// Font size and getImageData are responsible for text visibility
+ctx.font = "20px Verdana";
 ctx.fillStyle = "white";
 // fillText(text, x, y, maxWidth)
-ctx.fillText("B", 50, 40);
+ctx.fillText(displayedText, 50, 40);
 
 // Scan for data with getImageData(coordiantes)
 const textCoords = ctx.getImageData(0, 0, 100, 100);
 // Area that we are scanning
-// ctx.strokeStyle = "white";
-// ctx.strokeRect(0, 0, 100, 100);
+ctx.strokeStyle = "white";
+ctx.strokeRect(0, 0, 100, 100);
 
 class Particle {
   constructor(x, y) {
@@ -42,7 +50,7 @@ class Particle {
   }
 
   draw() {
-    ctx.fillStyle = "yellow";
+    ctx.fillStyle = `rgb(${particleColorChannel[0]}, ${particleColorChannel[1]}, ${particleColorChannel[2]}`;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.closePath();
@@ -83,10 +91,7 @@ class Particle {
 }
 
 // Fills array with particle objects
-// console.log(textCoords.data);
-
 const init = () => {
-  const spredOfParticles = 15;
   particleArray = [];
   for (let y = 0, y2 = textCoords.height; y < y2; y++) {
     for (let x = 0, x2 = textCoords.width; x < x2; x++) {
@@ -105,14 +110,38 @@ const init = () => {
   }
 };
 
+const connect = () => {
+  let oppacityValue = 1;
+  for (let a = 0; a < particleArray.length; a++) {
+    for (let b = a; b < particleArray.length; b++) {
+      // calculate distance between every particle in array, a = b to prevent unnecessary calculation
+      let dx = particleArray[a].x - particleArray[b].x;
+      let dy = particleArray[a].y - particleArray[b].y;
+      let distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < thresholdConnectionDistance) {
+        // Connect particles
+        oppacityValue = 1 - distance / thresholdConnectionDistance;
+        ctx.strokeStyle = `rgba(${connectionColorChannel[0]}, ${connectionColorChannel[1]}, ${connectionColorChannel[2]}, ${oppacityValue})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(particleArray[a].x, particleArray[a].y);
+        ctx.lineTo(particleArray[b].x, particleArray[b].y);
+        ctx.stroke();
+      }
+    }
+  }
+};
+
 // Animation loop
 const animate = () => {
   // Clear canvas before each animation
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let i = 0; i < particleArray.length; i++) {
     particleArray[i].draw();
     particleArray[i].update();
   }
+  connect();
   requestAnimationFrame(animate);
 };
 

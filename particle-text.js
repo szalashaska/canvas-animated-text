@@ -105,26 +105,6 @@ const init = () => {
   }
 };
 
-const connect = () => {
-  console.log("hi");
-  for (let a = 0; a < particleArray.length; a++) {
-    for (let b = a; b < particleArray.length; b++) {
-      let dx = particleArray[a].x - particleArray[b].x;
-      let dy = particleArray[a].y - particleArray[b].y;
-      let distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < 100) {
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(particleArray[a].x, particleArray[a].y);
-        ctx.lineTo(particleArray[b].x, particleArray[b].y);
-        ctx.stroke();
-      }
-    }
-  }
-};
-
 // Animation loop
 const animate = () => {
   // Clear canvas before each animation
@@ -133,7 +113,6 @@ const animate = () => {
     particleArray[i].draw();
     particleArray[i].update();
   }
-  connect();
   requestAnimationFrame(animate);
 };
 
