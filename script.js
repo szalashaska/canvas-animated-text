@@ -3,7 +3,7 @@ const connectionColorChannel = [255, 255, 255];
 const particleColorChannel = [255, 255, 255];
 const spredOfParticles = 20;
 const thresholdConnectionDistance = 75;
-let adjustX = -40;
+let adjustX = 0;
 let adjustY = 0;
 const displayedText = "Hello";
 
@@ -26,16 +26,17 @@ window.addEventListener("mousemove", (e) => {
 });
 
 // Font size and getImageData are responsible for text visibility
-ctx.font = "20px Verdana";
+ctx.font = "30px Verdana";
 ctx.fillStyle = "white";
 // fillText(text, x, y, maxWidth)
-ctx.fillText(displayedText, 50, 40);
+ctx.fillText(displayedText, 0, 30);
 
 // Scan for data with getImageData(coordiantes)
-const textCoords = ctx.getImageData(0, 0, 100, 100);
+// const textCoords = ctx.getImageData(0, 0, 100, 100); -> by default
+const textCoords = ctx.getImageData(0, 0, 100, 50);
 // Area that we are scanning
 ctx.strokeStyle = "white";
-ctx.strokeRect(0, 0, 100, 100);
+ctx.strokeRect(0, 0, 100, 50);
 
 class Particle {
   constructor(x, y) {
@@ -136,7 +137,7 @@ const connect = () => {
 // Animation loop
 const animate = () => {
   // Clear canvas before each animation
-  // ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let i = 0; i < particleArray.length; i++) {
     particleArray[i].draw();
     particleArray[i].update();
